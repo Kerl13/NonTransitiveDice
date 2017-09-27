@@ -5,12 +5,14 @@
 
 %% Entrypoint
 
-% Look for a cycle involving the two first dice
-check_dice([A1 | [A2 | L]]) :- beats(A1, A2), look_for_cycle_with(A1, A2, L).
-check_dice([A1 | [A2 | L]]) :- beats(A2, A1), look_for_cycle_with(A2, A1, L).
+% Remember the first dice
+check_dice([A | L]) :- check_dice_aux(A, [A | L]).
 
-% Drop a dice and retry
-check_dice([_A | L]) :- check_dice(L).
+% First argument is the first dice of the cycle
+check_dice_aux(Fst, [Last]) :- beats(Last, Fst).
+check_dice_aux(Fst, [A1 | [A2 | L]]) :-
+   beats(A1, A2),
+   check_dice_aux(Fst, [A2 | L]).
 
 
 
@@ -32,14 +34,6 @@ a_wins_b_wins([[X, Y] | Comb], Awins, Bwins) :-
    X < Y,
    a_wins_b_wins(Comb, Awins, Bwins_minus_1),
    Bwins is 1 + Bwins_minus_1.
-
-
-
-%% Assuming beats(A, B), look for a C in the third argument s.t. (A, B, C)
-%  form a cycle.
-look_for_cycle_with(A, B, [C | _L]) :- beats(B, C), beats(C, A).
-look_for_cycle_with(A, B, [_H | L]) :- look_for_cycle_with(A, B, L).
-
 
 
 %
