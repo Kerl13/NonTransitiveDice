@@ -2,6 +2,7 @@
 % Part 1: check wether a set of dice is nontransitive
 %
 
+:- use_module(misc).
 
 %% Entrypoint
 
@@ -34,20 +35,3 @@ a_wins_b_wins([[X, Y] | Comb], Awins, Bwins) :-
    X < Y,
    a_wins_b_wins(Comb, Awins, Bwins_minus_1),
    Bwins is 1 + Bwins_minus_1.
-
-
-%
-% Helper functions
-%
-
-%% combine(Xs, Ys, Comb) <=> Comb = [[X,Y] for X in Xs, Y in Ys]
-
-combine([], _Ys, []).
-combine([X | Xs], Ys, Comb) :-
-   combine(Xs, Ys, Comb_partial),
-   combine_aux(X, Ys, Comb, Comb_partial).
-
-% combine_aux(X, Ys, Tot, Partial) <=> Tot = [[X, Y] for Y in Ys] ++ Partial
-combine_aux(_X, [], L, L).
-combine_aux(X, [Y | Ys], [[X, Y] | Comb], Comb_partial) :-
-   combine_aux(X, Ys, Comb, Comb_partial).
