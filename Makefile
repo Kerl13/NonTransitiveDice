@@ -1,4 +1,4 @@
-DEPS = src/misc.pl
+DEPS = src/misc.pl src/misc_fd.pl
 
 .PHONY: all part1 part2 clean
 

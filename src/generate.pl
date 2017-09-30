@@ -1,24 +1,27 @@
 :- use_module(library(clpfd)).
 :- use_module(misc).
+:- use_module(misc_fd).
 
-dice(A, B, C) :-
-   set_range(A, 1, 10),
-   set_range(A, 1, 10),
-   set_range(C, 1, 10),
-   beats(A, B),
-   beats(B, C),
-   beats(C, A).
+dice(0, _S, []).
+dice(N, S, L) :-
+   length(L, N), all_of_length(L, S),
+   Inf #= 1, Sup #= N + S, all_ins_domain(L, Inf, Sup),
+   cycle(L),
+   label_all(L).
 
-set_range([], Min, Max).
-set_range([X | Xs], Min, Max) :- X #>= Min, X #< Max, set_range(Xs, Min, Max).
+all_of_length([], _S).
+all_of_length([X | Xs], S) :- len(X, S), all_of_length(Xs, S).
 
-% FIXME: code duplication (higher order can fix it?)
+cycle([Fst | L]) :- cycle_aux(Fst, [Fst | L]).
+
+cycle_aux(Fst, [Last]) :- beats(Last, Fst).
+cycle_aux(Fst, [A | [B | L]]) :- beats(A, B), cycle_aux(Fst, [B | L]).
+
 beats(A, B) :-
    combine(A, B, Comb),
    a_wins_b_wins(Comb, Awins, Bwins),
    Awins #> Bwins.
 
-% FIXME: code duplication (higher order can fix it?)
 a_wins_b_wins([], 0, 0).
 a_wins_b_wins([[X, Y] | Comb], Awins, Bwins) :-
    X #> Y,
