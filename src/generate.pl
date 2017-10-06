@@ -2,12 +2,11 @@
 :- use_module(misc).
 :- use_module(misc_fd).
 
-dice(0, _S, []).
 dice(N, S, L) :-
    length(L, N), all_of_length(L, S),
    Inf #= 1, Sup #= N + S, all_ins_domain(L, Inf, Sup),
    cycle(L),
-   label_all(L).
+   flatten(L, FL), label(FL).
 
 all_of_length([], _S).
 all_of_length([X | Xs], S) :- len(X, S), all_of_length(Xs, S).
