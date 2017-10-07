@@ -1,32 +1,60 @@
 :- use_module(library(clpfd)).
-:- use_module(misc).
-:- use_module(misc_fd).
 
+
+%% Entrypoint
+
+% Problem constrains:
+% - L has length N
+% - for each die in L, length(die) = S
+% - non_transitive
+%
+% Helping prolog to solve the problem:
+% - order every die
+% - one might assume that the first side of the first die is 1
+% - There exists solution with faces in 1..N+3
 dice(N, S, L) :-
-   length(L, N), all_of_length(L, S),
-   Inf #= 1, Sup #= N + S, all_ins_domain(L, Inf, Sup),
-   cycle(L),
-   flatten(L, FL), label(FL).
+   flatten(L, FlatL),
 
-all_of_length([], _S).
-all_of_length([X | Xs], S) :- len(X, S), all_of_length(Xs, S).
+   length(L, N),
+   set_len_and_order(L, S),
+   nth0(0, FlatL, 1),
+   Sup is N + 3, FlatL ins 1..Sup,
 
-cycle([Fst | L]) :- cycle_aux(Fst, [Fst | L]).
+   non_transitive(L, S),
+   labeling([ff], FlatL).
 
-cycle_aux(Fst, [Last]) :- beats(Last, Fst).
-cycle_aux(Fst, [A | [B | L]]) :- beats(A, B), cycle_aux(Fst, [B | L]).
 
-beats(A, B) :-
-   combine(A, B, Comb),
-   a_wins_b_wins(Comb, Awins, Bwins),
-   Awins #> Bwins.
+% All dice have length S and are ordered
+set_len_and_order([], _).
+set_len_and_order([D | Ds], Size) :-
+   length(D, Size),
+   chain(D, #=<),
+   set_len_and_order(Ds, Size).
 
-a_wins_b_wins([], 0, 0).
-a_wins_b_wins([[X, Y] | Comb], Awins, Bwins) :-
-   X #> Y,
-   a_wins_b_wins(Comb, Awins_minus_1, Bwins),
-   Awins #= 1 + Awins_minus_1.
-a_wins_b_wins([[X, Y] | Comb], Awins, Bwins) :-
-   X #< Y,
-   a_wins_b_wins(Comb, Awins, Bwins_minus_1),
-   Bwins #= 1 + Bwins_minus_1.
+
+%% Non-transitive dice problem constraints
+
+non_transitive([First | L], Size) :- non_transitive_aux(L, First, First, Size).
+
+non_transitive_aux([], Last, First, Size) :- beats(Last, First, Size).
+non_transitive_aux([B | L], A, First, Size) :-
+   beats(A, B, Size),
+   non_transitive_aux(L, B, First, Size).
+
+beats(A, B, Size) :-
+   victories_of_A(A, B, Comb),
+   Th is (Size * Size) // 2,
+   sum(Comb, #>, Th).
+
+
+%% Build the list : [ (a #> b) for a in A, b in B ]
+
+victories_of_A([], _Ys, []).
+victories_of_A([X | Xs], Ys, Comb) :-
+   victories_of_A_aux(Ys, X, Comb, Comb_partial),
+   victories_of_A(Xs, Ys, Comb_partial).
+
+victories_of_A_aux([], _, L, L).
+victories_of_A_aux([Y | Ys], X, [B | Comb], Comb_partial) :-
+   B #<==> X #> Y,
+   victories_of_A_aux(Ys, X, Comb, Comb_partial).

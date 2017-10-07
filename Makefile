@@ -1,5 +1,3 @@
-DEPS = src/misc.pl src/misc_fd.pl
-
 .PHONY: all part1 part2 clean
 
 all:
@@ -13,10 +11,10 @@ part1: check
 part2: generate
 	./$<
 
-check: src/check.pl $(DEPS)
+check: src/check.pl
 	swipl -o $@ -c $<
 
-generate: src/generate.pl $(DEPS)
+generate: src/generate.pl
 	swipl -o $@ -c $<
 
 clean:
