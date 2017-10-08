@@ -23,8 +23,6 @@ optimal_constraints(N, S, L, Pmin) :-
    Sup is N * S, FlatL ins 1..Sup,
    nth0(0, FlatL, 1),
    non_transitive(L, S, Probas),
-   % Probably reasonable but I cannot prove it:
-   % maplist(head, L, Heads), Expected is (N * (N + 1)) // 2, fd_list_sum(Heads, Expected),
    fd_list_min(Probas, Pmin),
    all_distinct(FlatL).
 
