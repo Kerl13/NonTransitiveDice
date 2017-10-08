@@ -11,11 +11,17 @@ part1: check
 part2: generate
 	./$<
 
+part3: optimal
+	./$<
+
 check: src/check.pl
 	swipl -o $@ -c $<
 
 generate: src/generate.pl
 	swipl -o $@ -c $<
 
+optimal: src/optimal.pl
+	swipl -o $@ -c $<
+
 clean:
-	rm -f check generate
+	rm -f check generate optimal
