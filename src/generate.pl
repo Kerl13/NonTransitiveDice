@@ -19,7 +19,7 @@ dice(N, S, L) :-
 % Restrict the search space:
 % - order every die in ascending order
 % - one can assume that the first side of the first die is 1
-% - there exists solutions with faces in 1..N+3
+% - there exists solutions with sides in 1..N+3
 dice_constraints(N, S, L) :-
    length(L, N),
    set_len_and_order(L, S),

@@ -33,7 +33,7 @@ optimal_constraints(N, S, L, Pmin) :-
 set_len_and_order([], _).
 set_len_and_order([D | Ds], Size) :-
    length(D, Size),
-   chain(D, #=<),
+   chain(D, #<),
    set_len_and_order(Ds, Size).
 
 
