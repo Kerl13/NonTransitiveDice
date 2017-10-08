@@ -82,8 +82,3 @@ victories_of_A_aux([Y | Ys], X, [B | Comb], Comb_partial) :-
 fd_list_min([H | T], Min) :- foldl(fd_min, [H | T], H, Min).
 fd_min(A, B, Min) :- A #< B, Min #= A.
 fd_min(A, B, Min) :- A #>= B, Min #= B.
-
-fd_list_sum(L, Sum) :- foldl(fd_add, L, 0, Sum).
-fd_add(X, Y, Z) :- Z #= X + Y.
-
-head([H | _], H).
